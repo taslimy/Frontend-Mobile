@@ -6,11 +6,16 @@ import {
   View,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Image,
+  Button
 } from 'react-native';
 import { ScrollView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { connect } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker'
+import Constants from 'expo-constants'
+import * as Permissions from 'expo-permissions'
 
 import { postCampaign, getCampaigns } from '../store/actions';
 
@@ -41,14 +46,38 @@ class CreateCampScreen extends React.Component {
 
   state = {
     users_id: this.props.currentUserProfile.id,
-    camp_img: '',
     camp_name: '',
     camp_desc: '',
-    camp_cta: ''
+    camp_cta: '',
+    camp_img: '',
   };
+
+  getPermissionAsync = async() => {
+      if (Constants.platform.ios) {
+          const {status }= await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          if(status !==  'granted'){
+              alert('Sorry, we need camera roll permissions to make this work!');
+          }
+      }
+  }
+
+  _pickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+      })
+      console.log(result, 'Pick Image ----------------------------------');
+      if(!result.cancelled){
+          this.setState({
+            camp_img: result.uri
+          })
+      }
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({ publish: this.publish });
+    this.getPermissionAsync();
   }
 
   publish = async () => {
@@ -67,6 +96,8 @@ class CreateCampScreen extends React.Component {
   };
 
   render() {
+    let { camp_img } = this.state;
+    console.log(this.state.users_id)
     return (
       <KeyboardAvoidingView
         behavior='height'
@@ -100,23 +131,12 @@ class CreateCampScreen extends React.Component {
             </View>
             <View style={styles.sections}>
               <Text style={styles.sectionsText}>Campaign Image URL</Text>
-              <TextInput
-                ref={input => {
-                  this.campImgUrlInput = input;
-                }}
-                returnKeyType='next'
-                keyboardType='url'
-                placeholder='Please include full URL'
-                autoCapitalize='none'
-                style={styles.inputContain}
-                onChangeText={text => this.setState({ camp_img: text })}
-                onSubmitEditing={() => {
-                  if (Platform.OS === 'android') return;
-                  this.campDetailsInput.focus();
-                }}
-                blurOnSubmit={Platform.OS === 'android'}
-                value={this.state.camp_img}
-              />
+                <Button
+                title= 'Click here to choose an Image'
+                onPress={this._pickImage}
+                />
+                {camp_img ?
+                <Image source={{ url: camp_img }} style={{width: 50, height: 50}}/> : null}
             </View>
 
             <View style={styles.sections}>

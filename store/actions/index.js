@@ -44,9 +44,9 @@ export const getProfileData = (
   dispatch({ type: GET_PROFILE_START });
   let user, url;
   if (id)
-    url = `https://key-conservation-staging.herokuapp.com/api/users/${id}`;
+    url = `http://localhost:8000/api/users/${id}`;
   else if (sub)
-    url = `https://key-conservation-staging.herokuapp.com/api/users/sub/${sub}`;
+    url = `http://localhost:8000/api/users/sub/${sub}`;
   return axios
     .get(url)
     .then(res => {
@@ -120,7 +120,7 @@ export const editProfileData = (id, changes) => async dispatch => {
 
   return axios
     .put(
-      `https://key-conservation-staging.herokuapp.com/api/users/${id}`,
+      `http://localhost:8000/api/users/${id}`,
       changes
     )
     .then(res => {
@@ -141,7 +141,7 @@ export const [POST_USER_START, POST_USER_ERROR, POST_USER_SUCCESS] = [
 export const postUser = user => dispatch => {
   dispatch({ type: POST_USER_START });
   axios
-    .post('https://key-conservation-staging.herokuapp.com/api/users', user)
+    .post('http://localhost:8000/api/users', user)
     .then(res => {
       dispatch({ type: POST_USER_SUCCESS, payload: res.data.newUser });
     })
@@ -159,7 +159,7 @@ export const [
 export const getCampaigns = () => dispatch => {
   dispatch({ type: GET_CAMPAIGNS_START });
   axios
-    .get('https://key-conservation-staging.herokuapp.com/api/campaigns')
+    .get('http://localhost:8000/api/campaigns')
     .then(res => {
       dispatch({ type: GET_CAMPAIGNS_SUCCESS, payload: res.data.camp });
     })
@@ -188,8 +188,31 @@ export const postCampaign = camp => dispatch => {
     let donate = 'https://' + camp.camp_cta;
     camp.camp_cta = donate;
   }
+
+    const uri = camp.camp_img
+
+    let uriParts = uri.split('.');
+    let fileType = uriParts[uriParts.length - 1];
+
+    let formData = new FormData();
+    formData.append('photo', {
+      uri,
+      name: `photo.${fileType}`,
+      type: `image/${fileType}`,
+    });
+    formData.append('camp_cta', camp.camp_cta)
+    formData.append('camp_desc', camp.camp_desc)
+    formData.append('camp_name', camp.camp_name)
+    formData.append('users_id', camp.users_id)
+
+    console.log(formData)
   axios
-    .post('https://key-conservation-staging.herokuapp.com/api/campaigns', camp)
+    .post('http://localhost:8000/api/campaigns', formData, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      }
+    })
     .then(res => {
       dispatch({ type: POST_CAMPAIGN_SUCCESS, payload: res.data.newCamps });
     })
@@ -212,7 +235,7 @@ export const deleteCampaign = id => dispatch => {
   dispatch({ type: DELETE_CAMPAIGN_START });
   axios
     .delete(
-      `https://key-conservation-staging.herokuapp.com/api/campaigns/${id}`
+      `http://localhost:8000/api/campaigns/${id}`
     )
     .then(res => {
       dispatch({ type: DELETE_CAMPAIGN_SUCCESS, payload: res.data });

@@ -23,7 +23,8 @@ import {
   POST_CAMPAIGN_SUCCESS,
   DELETE_CAMPAIGN_START,
   DELETE_CAMPAIGN_ERROR,
-  DELETE_CAMPAIGN_SUCCESS
+  DELETE_CAMPAIGN_SUCCESS,
+  MEDIA_UPLOAD
 } from "../actions";
 
 const initialState = {
@@ -45,7 +46,8 @@ const initialState = {
   selectedProfile: {
     campaigns: []
   },
-  allCampaigns: []
+  allCampaigns: [],
+  mediaUpload: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -203,7 +205,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         pending: { ...state.pending, postCampaign: false },
         currentUserProfile: {
-          ...state.currentUserProfile, 
+          ...state.currentUserProfile,
           campaigns: [
             ...state.currentUserProfile.campaigns, action.payload
           ]
@@ -215,6 +217,11 @@ const reducer = (state = initialState, action) => {
         pending: { ...state.pending, postCampaign: false },
         error: action.payload
       };
+    case MEDIA_UPLOAD:
+      return {
+        ...state,
+        mediaUpload: action.payload
+      }
     default:
       return state;
   }

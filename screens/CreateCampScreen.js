@@ -7,19 +7,17 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Image,
   Button
 } from 'react-native';
 import { ScrollView } from 'react-navigation';
 import { Input } from 'react-native-elements';
 import { connect } from 'react-redux';
-import * as ImagePicker from 'expo-image-picker'
-import Constants from 'expo-constants'
-import * as Permissions from 'expo-permissions'
 
 import { postCampaign, getCampaigns } from '../store/actions';
 
 import PublishButton from '../components/PublishButton';
+
+import UploadMedia from '../components/UploadMedia'
 
 class CreateCampScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -49,35 +47,11 @@ class CreateCampScreen extends React.Component {
     camp_name: '',
     camp_desc: '',
     camp_cta: '',
-    camp_img: '',
+    camp_img: this.props.mediaUpload,
   };
-
-  getPermissionAsync = async() => {
-      if (Constants.platform.ios) {
-          const {status }= await Permissions.askAsync(Permissions.CAMERA_ROLL);
-          if(status !==  'granted'){
-              alert('Sorry, we need camera roll permissions to make this work!');
-          }
-      }
-  }
-
-  _pickImage = async () => {
-      let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-      })
-      console.log(result, 'Pick Image ----------------------------------');
-      if(!result.cancelled){
-          this.setState({
-            camp_img: result.uri
-          })
-      }
-  }
 
   componentDidMount() {
     this.props.navigation.setParams({ publish: this.publish });
-    this.getPermissionAsync();
   }
 
   publish = async () => {
@@ -97,7 +71,7 @@ class CreateCampScreen extends React.Component {
 
   render() {
     let { camp_img } = this.state;
-    console.log(this.state.users_id)
+    console.log(this.props.mediaUpload)
     return (
       <KeyboardAvoidingView
         behavior='height'
@@ -130,13 +104,7 @@ class CreateCampScreen extends React.Component {
               />
             </View>
             <View style={styles.sections}>
-              <Text style={styles.sectionsText}>Campaign Image URL</Text>
-                <Button
-                title= 'Click here to choose an Image'
-                onPress={this._pickImage}
-                />
-                {camp_img ?
-                <Image source={{ url: camp_img }} style={{width: 50, height: 50}}/> : null}
+              <UploadMedia />
             </View>
 
             <View style={styles.sections}>
@@ -177,7 +145,8 @@ class CreateCampScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  currentUserProfile: state.currentUserProfile
+  currentUserProfile: state.currentUserProfile,
+  mediaUpload: state.mediaUpload
 });
 
 export default connect(

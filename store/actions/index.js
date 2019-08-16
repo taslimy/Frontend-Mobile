@@ -244,3 +244,12 @@ export const deleteCampaign = id => dispatch => {
       dispatch({ type: DELETE_CAMPAIGN_ERROR, payload: err });
     });
 };
+
+export const MEDIA_UPLOAD = 'MEDIA_UPLOAD';
+
+export const setMedia = media => {
+    return {
+      type: MEDIA_UPLOAD,
+      payload: media
+    }
+}

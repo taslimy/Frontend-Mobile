@@ -119,17 +119,10 @@ We have setup a HOC to wrap desired components to have analytics. The component 
 # Environment Variables
 
 In order for the app to function correctly, the user must set up their own environment variables. There should be a .env file containing the following:
-
-🚫These are just examples, replace them with the specifics for your app
-
     
 # 5️⃣ Content Licenses
 
-🚫For all content - images, icons, etc, use this table to document permission of use. Remove the two placeholders and add you content to this table
-
-| Source / Creator | License          |
-| --------------   | ---------------- | ---------------------------------------------------------------------------- |
-| Font Awesome     |   Pro License    |  https://fontawesome.com
+FontAwesome Pro License From: https://fontawesome.com
   
 # Contributing
 
